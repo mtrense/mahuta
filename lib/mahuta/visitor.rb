@@ -17,6 +17,10 @@ module Mahuta
   
   module Visitor
     
+    def initialize(options = {})
+      @options = options
+    end
+    
     def enter(node, depth)
       if respond_to?("enter_#{node.node_type}")
         send "enter_#{node.node_type}", *[node, depth][0...method("enter_#{node.node_type}").arity]
