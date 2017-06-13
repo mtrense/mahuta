@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Mahuta let's you define forests in neat DSLs.}
   # spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = 'https://www.trense.info/projects'
+  spec.homepage      = 'https://mtrense.github.com'
 
   spec.files         = Dir[*%W'exe/* lib/**/*.rb Gemfile *.gemspec CODE_OF_CONDUCT.* README.* VERSION']
   spec.bindir        = 'exe'
