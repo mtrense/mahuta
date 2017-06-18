@@ -34,7 +34,7 @@ require 'mahuta'
 
 Mahuta uses modules to define the schema for specific types of nodes. A `Mahuta::Schema` defines the mapping between node types (such as `:root` and `:namespace` from the example below) to modules that are `extend()`ed onto each node object.
 
-Each module can define arbitrary methods that should be available for each node of types that extend the specific module. One major use case for such methods would be to create new child nodes of a specific type. As a convention (and to avoid name clashes with other helper methods on node objects) you could uses method names ending in an exclamation mark for those methods.
+Each module can define arbitrary methods that should be available for each node of types that extend the specific module. One major use case for such methods would be to create new child nodes of a specific type. As a convention (and to avoid name clashes with other helper methods on node objects) you could use method names ending in an exclamation mark for those methods.
 
 The following example uses explicit modules to define a simple schema:
 ```ruby
