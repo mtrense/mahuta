@@ -96,6 +96,7 @@ class JavaPrinter
   
 end
 
+tree.traverse Mahuta::Utils::TreePrinter.new
 tree.traverse JavaPrinter.new
 
 binding.pry
