@@ -7,6 +7,10 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
   SimpleCov::Formatter::Console
 ]
 
+SimpleCov.start do
+  add_filter '/spec/'
+end
+
 require 'mahuta'
 
 RSpec.configure do |config|
