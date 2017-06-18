@@ -39,9 +39,10 @@ RSpec.describe Mahuta::Node do
   end
   
   context 'A single node with attributes' do
-    subject do
+    let(:root) do
       Mahuta::Node.new nil, schema, :root, test1: true, test2: 123, test3: [:a, :b, :c]
     end
+    subject { root }
     
     it('should have no parent') { expect(subject.parent).to be_nil }
     it('should have no children') { expect(subject.children).to be_empty }
@@ -111,15 +112,59 @@ RSpec.describe Mahuta::Node do
     let(:one_one) { one[1] }
     let(:one_one_two) { one[1][0] }
     
-    it { expect(one.children(:two)).to contain_exactly(one_two) }
-    it { expect(one.children {|n| n.node_type == :two }).to contain_exactly(one_two) }
-    it { expect(one.children(:one) {|n| n.node_type == :two }).to be_empty }
+    it('#children filters children by node type') do
+      expect(one.children(:two)).to contain_exactly(one_two)
+    end
+    it('#children filters children by result of the block') do
+      expect(one.children {|n| n.node_type == :two }).to contain_exactly(one_two)
+    end
+    it('#children filters children by node type and result of the block') do
+      expect(one.children(:one) {|n| n.node_type == :two }).to be_empty
+    end
     
-    it { expect(one_one_two.ascendants(:one)).to contain_exactly(one_one, one) }
-    it { expect(one_one_two.ascendant(:one)).to equal(one_one) }
+    it('#ascendants filters parent chain by node type') do
+      expect(one_one_two.ascendants(:one)).to contain_exactly(one_one, one)
+    end
+    it('#ascendant filters parent chain by node type') do
+      expect(one_one_two.ascendant(:one)).to equal(one_one)
+    end
     
     context 'Traversing' do
+      let(:traversal_order) do
+        [
+          [root, :enter, 0], 
+          [one, :enter, 1], 
+          [one_two, :enter, 2], 
+          [one_two, :leave, 2], 
+          [one_one, :enter, 2], 
+          [one_one_two, :enter, 3], 
+          [one_one_two, :leave, 3], 
+          [one_one, :leave, 2], 
+          [one, :leave, 1], 
+          [root, :leave, 0]
+        ]
+      end
       
+      it('traverse calls its block in the right order') do
+        nodes = []
+        root.traverse do |node, operation, depth|
+          nodes << [node, operation, depth]
+        end
+        expect(nodes).to contain_exactly(*traversal_order)
+      end
+      
+      it('traverse calls visitor in the right order') do
+        nodes = []
+        visitor = Object.new
+        visitor.define_singleton_method :enter do |node, depth|
+          nodes << [node, :enter, depth]
+        end
+        visitor.define_singleton_method :leave do |node, depth|
+          nodes << [node, :leave, depth]
+        end
+        root.traverse visitor
+        expect(nodes).to contain_exactly(*traversal_order)
+      end
       
     end
     
