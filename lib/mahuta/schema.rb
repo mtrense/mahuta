@@ -33,8 +33,6 @@ module Mahuta
     
     def [](key)
       case key
-      when Module
-        [*key]
       when Symbol, String
         [*@mapping[key.to_sym]]
       end
@@ -50,14 +48,6 @@ module Mahuta
       end
       (@mapping[name.to_sym] ||= []).push(*type)
       type
-    end
-    
-    def apply_to(node, *keys)
-      keys.each do |key|
-        self[key].each do |type|
-          node.extend type
-        end
-      end
     end
     
   end
