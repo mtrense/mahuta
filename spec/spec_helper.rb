@@ -1,4 +1,7 @@
 require 'bundler/setup'
+require 'simplecov'
+SimpleCov.start
+
 require 'mahuta'
 
 RSpec.configure do |config|
