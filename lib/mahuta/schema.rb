@@ -17,14 +17,9 @@ module Mahuta
   
   class Schema
     
-    def initialize(mapping = {})
+    def initialize(mapping = {}, &block)
       @mapping = mapping
-    end
-    
-    def self.define(&block)
-      new.tap do |schema|
-        schema.instance_exec &block
-      end
+      instance_exec &block if block
     end
     
     def new(&block)

@@ -40,9 +40,9 @@ RSpec.describe Mahuta::Schema do
       
     end
     
-    context 'A schema defined with Schema.define()' do
+    context 'A schema defined with a block' do
       subject do
-        Mahuta::Schema.define do
+        Mahuta::Schema.new do
           type :root
         end
       end
