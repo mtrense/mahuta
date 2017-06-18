@@ -54,7 +54,7 @@ schema = Mahuta::Schema.new(
 
 You can now create trees from the `schema` object like this:
 ```ruby
-schema.define do
+schema.new do
   namespace! :com, :example do
     type! :Person
   end
