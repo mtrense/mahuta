@@ -15,16 +15,28 @@
 
 RSpec.describe Mahuta::Schema do
   
-  context do
-    let(:mod1) { Module.new { def test1 ; end } }
-    let(:mod2) { Module.new { def test2 ; end } }
-    subject { Mahuta::Schema.new(root: mod1) }
+  context 'A schema with two node types' do
+    let :mod1 do
+      Module.new do
+        def test1 ; end
+        def type2! ; add_child(:type2) ; end
+      end
+    end
+    let :mod2 do
+      Module.new do
+        def test2 ; end
+      end
+    end
+    subject { Mahuta::Schema.new(root: mod1, type2: mod2) }
     
-    it { expect(subject[:root]).to include(mod1) }
+    it('should include Module 1') { expect(subject[:root]).to include(mod1) }
+    it('should include Module 2') { expect(subject[:type2]).to include(mod2) }
     
-    context do
+    context 'An instance of the schema' do
       
       it { expect(subject.new {}).to respond_to(:test1) }
+      it { expect(subject.new {}).not_to respond_to(:test2) }
+      
     end
     
   end
