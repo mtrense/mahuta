@@ -1,6 +1,11 @@
 require 'bundler/setup'
 require 'simplecov'
-SimpleCov.start
+require 'simplecov-console'
+
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  SimpleCov::Formatter::Console
+]
 
 require 'mahuta'
 
