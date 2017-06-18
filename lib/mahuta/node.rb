@@ -17,11 +17,12 @@ module Mahuta
   
   class Node
     
-    def initialize(parent, type, attributes = {}, &block)
+    def initialize(parent, schema, type, attributes = {}, &block)
       @parent = parent
+      @schema = schema
       @attributes = attributes
       @node_type = type
-      schema[@node_type].each do |type|
+      self.schema[@node_type].each do |type|
         case type
         when Module
           extend type
@@ -40,7 +41,7 @@ module Mahuta
     end
     
     def root
-      parent.root
+      root? ? self : parent.root
     end
     
     def ascendant(*of_type, &block)
@@ -52,11 +53,15 @@ module Mahuta
     # Criteria can be given as array of types (of which one must match) or as 
     # block which is executed with the ascendant as argument.
     def ascendants(*of_type, &block)
-      __filter_node_list([parent] + parent.ascendants, *of_type, &block)
+      if root?
+        []
+      else
+        __filter_node_list([parent] + parent.ascendants, *of_type, &block)
+      end
     end
     
     def schema
-      parent.schema
+      @schema || parent.schema
     end
     
     def [](name)
@@ -71,7 +76,7 @@ module Mahuta
     end
     
     def root?
-      false
+      parent.nil?
     end
     
     def leaf?
@@ -87,7 +92,7 @@ module Mahuta
     end
     
     def add_child(node_type, attributes = {}, &block)
-      node = Node.new(self, node_type, attributes, &block).tap do |node|
+      Node.new(self, nil, node_type, attributes, &block).tap do |node|
         children << node
       end
     end
@@ -110,25 +115,6 @@ module Mahuta
           (of_type.empty? or of_type.include?(n.node_type)) and (not block or block.call(n))
         end
       end
-    end
-    
-  end
-  
-  class RootNode < Node
-    
-    def initialize(schema, &block)
-      @schema = schema
-      super(nil, :root, &block)
-    end
-    
-    attr_reader :schema
-    
-    def ascendants(*args)
-      []
-    end
-    
-    def root
-      self
     end
     
   end

@@ -20,8 +20,8 @@ module Mahuta
   require 'mahuta/visitor'
   require 'mahuta/utils'
   
-  def self.build(schema, &block)
-    RootNode.new(schema, &block)
+  def self.build(schema, attributes = {}, &block)
+    Node.new(nil, schema, :root, attributes, &block)
   end
   
 end
