@@ -14,14 +14,11 @@
 # limitations under the License.
 
 module Mahuta
-  require 'mahuta/version'
-  require 'mahuta/schema'
-  require 'mahuta/node'
-  require 'mahuta/visitor'
-  require 'mahuta/utils'
   
-  def self.build(schema, &block)
-    RootNode.new(schema, &block)
+  module Utils
+    require 'mahuta/utils/tree_printer'
+    
+    
   end
   
 end

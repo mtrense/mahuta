@@ -13,15 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Mahuta
-  require 'mahuta/version'
-  require 'mahuta/schema'
-  require 'mahuta/node'
-  require 'mahuta/visitor'
-  require 'mahuta/utils'
+module Mahuta::Utils
   
-  def self.build(schema, &block)
-    RootNode.new(schema, &block)
+  class TreePrinter
+    include Mahuta::Visitor
+    
+    DEFAULT_FORMAT = proc do |node, depth, desc|
+      '  '*depth + (node.leaf? ? '-' : '+') + " [#{node.node_type}] #{desc}"
+    end
+    
+    def initialize(options = {})
+      @out = options[:out] || $stdout
+      @inspect = options[:inspect] || [:name]
+      @format = options[:format] || DEFAULT_FORMAT
+    end
+    
+    def enter(node, depth)
+      desc = [*@inspect].lazy.collect {|i| node.respond_to?(i) || node[i]}.detect {|obj| obj } || node.inspect
+      @out.puts @format.call(node, depth, desc)
+    end
+    
   end
   
 end
