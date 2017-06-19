@@ -29,7 +29,7 @@ module Mahuta::Utils
     end
     
     def enter(node, depth)
-      desc = [*@inspect].lazy.collect {|i| node.respond_to?(i) || node[i]}.detect {|obj| obj } || node.inspect
+      desc = [*@inspect].lazy.collect {|i| node.respond_to?(i) || node[i]}.detect {|obj| obj } || (node.root? ? 'ROOT' : node.inspect)
       @out.puts @format.call(node, depth, desc)
     end
     
