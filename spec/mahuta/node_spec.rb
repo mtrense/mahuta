@@ -100,7 +100,9 @@ RSpec.describe Mahuta::Node do
     let(:root) do
       schema.new do
         one! do
-          two!
+          two! do
+            three!
+          end
           one! do
             two!
           end
@@ -109,11 +111,15 @@ RSpec.describe Mahuta::Node do
     end
     let(:one) { root[0] }
     let(:one_two) { one[0] }
+    let(:one_two_three) { one_two[0] }
     let(:one_one) { one[1] }
-    let(:one_one_two) { one[1][0] }
+    let(:one_one_two) { one_one[0] }
     
     it('#children filters children by node type') do
       expect(one.children(:two)).to contain_exactly(one_two)
+    end
+    it('#children filters children by multiple node types') do
+      expect(one.children(:two, :one)).to contain_exactly(one_two, one_one)
     end
     it('#children filters children by result of the block') do
       expect(one.children {|n| n.node_type == :two }).to contain_exactly(one_two)
@@ -125,6 +131,9 @@ RSpec.describe Mahuta::Node do
     it('#ascendants filters parent chain by node type') do
       expect(one_one_two.ascendants(:one)).to contain_exactly(one_one, one)
     end
+    it('#ascendants filters parent chain by multiple node types') do
+      expect(one_two_three.ascendants(:one, :two)).to contain_exactly(one, one_two)
+    end
     it('#ascendant filters parent chain by node type') do
       expect(one_one_two.ascendant(:one)).to equal(one_one)
     end
@@ -135,6 +144,8 @@ RSpec.describe Mahuta::Node do
           [root, :enter, 0], 
           [one, :enter, 1], 
           [one_two, :enter, 2], 
+          [one_two_three, :enter, 3], 
+          [one_two_three, :leave, 3], 
           [one_two, :leave, 2], 
           [one_one, :enter, 2], 
           [one_one_two, :enter, 3], 
