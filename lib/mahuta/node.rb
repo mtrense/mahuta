@@ -59,6 +59,16 @@ module Mahuta
         __filter_node_list([parent] + parent.ascendants, *of_type, &block)
       end
     end
+
+    ##
+    # Gathers all descendants that match the given criteria, works like the ascendants method in all other aspects.
+    def descendants(*of_type, &block)
+      if leaf?
+        []
+      else
+        __filter_node_list(children + children.collect_concat {|child| child.descendants}, *of_type, &block)
+      end
+    end
     
     def schema
       @schema || parent.schema
