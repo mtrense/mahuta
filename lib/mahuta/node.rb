@@ -60,6 +60,10 @@ module Mahuta
       end
     end
 
+    def descendant(*of_type, &block)
+      descendants(*of_type, &block).first
+    end
+
     ##
     # Gathers all descendants that match the given criteria, works like the ascendants method in all other aspects.
     def descendants(*of_type, &block)
