@@ -51,6 +51,8 @@ RSpec.describe Mahuta::Node do
     it('should be its own root') { expect(subject.root).to equal(subject) }
     it('should have no ascendants') { expect(subject.ascendants).to be_empty }
     it('should have no ascendants') { expect(subject.ascendant).to be_nil }
+    it('should have no descendants') { expect(subject.descendants).to be_empty }
+    it('should have no descendants') { expect(subject.descendant).to be_nil }
     
     it { expect(subject[:test1]).to equal(true) }
     it { expect(subject[:test2]).to equal(123) }
@@ -73,6 +75,13 @@ RSpec.describe Mahuta::Node do
     it { expect(subject.children).not_to be_empty }
     it { expect(subject).to be_root }
     it { expect(subject).not_to be_leaf }
+
+    it('should have exactly one descendant') do
+      expect(subject.descendants.length).to equal(1) 
+      expect(subject.descendants.first).to equal(subject.descendant)
+    end
+
+    it('should have its child node as only descendant') { expect(subject.descendants).to contain_exactly(one) }
     
     it { expect(subject[0]).to equal(subject.children.first) }
     
@@ -93,6 +102,8 @@ RSpec.describe Mahuta::Node do
     
     it('should have one ascendant') { expect(subject.ascendants).to contain_exactly(root) }
     it('should have one ascendant') { expect(subject.ascendant).to equal(root) }
+
+    it('should have no descendants') { expect(subject.descendants).to be_empty }
     
   end
   
@@ -136,6 +147,17 @@ RSpec.describe Mahuta::Node do
     end
     it('#ascendant filters parent chain by node type') do
       expect(one_one_two.ascendant(:one)).to equal(one_one)
+    end
+
+    it('#descendants filters children tree by node type') do
+      expect(root.descendants(:one)).to contain_exactly(one, one_one)
+    end
+    it('#descendants filters children tree by multiple node types') do
+      expect(root.descendants(:one, :two)).to contain_exactly(one, one_two, one_one, one_one_two)
+    end
+    it('#descendant filters children_tree by node type') do
+      expect(root.descendant(:one)).to equal(one)
+      expect(root.descendant(:two)).to equal(one_two)
     end
     
     context 'Traversing' do
