@@ -203,4 +203,38 @@ RSpec.describe Mahuta::Node do
     
   end
   
+  context 'A hierarchy of three nodes' do
+    let(:root) do
+      schema.new do
+        Mahuta.import self, 'example_parent.rb'
+      end
+    end
+    
+    let(:one) { root[0] }
+    let(:one_two) { one[0] }
+    let(:one_two_three) { one_two[0] }
+    
+    let(:traversal_order) do
+      [
+        [root, :enter, 0], 
+        [one, :enter, 1], 
+        [one_two, :enter, 2], 
+        [one_two_three, :enter, 3], 
+        [one_two_three, :leave, 3], 
+        [one_two, :leave, 2], 
+        [one, :leave, 1], 
+        [root, :leave, 0]
+      ]
+    end
+    
+    it 'contains nodes from example_parent and example_child' do
+      nodes = []
+      root.traverse do |node, operation, depth|
+        nodes << [node, operation, depth]
+      end
+      expect(nodes).to contain_exactly(*traversal_order)
+    end
+    
+  end
+  
 end

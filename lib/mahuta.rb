@@ -15,6 +15,7 @@
 
 module Mahuta
   require 'mahuta/version'
+  require 'mahuta/common'
   require 'mahuta/schema'
   require 'mahuta/node'
   require 'mahuta/visitor'
@@ -22,6 +23,15 @@ module Mahuta
   
   def self.build(schema, attributes = {}, &block)
     Node.new(nil, schema, :root, attributes, &block)
+  end
+  
+  def self.import(node, file)
+    loc = caller_locations.reject {|l| %r'lib/mahuta' === l.path }.first
+    dir = Pathname(loc.path).parent
+    file = file + '.rb' unless file.include?('.')
+    path = (dir + file).to_s
+    node.instance_eval(File.read(path), path)
+    node
   end
   
 end

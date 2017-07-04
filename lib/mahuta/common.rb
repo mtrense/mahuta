@@ -13,13 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Mahuta::Common
+module Mahuta
   
-  module Import
-    
-    def import(file)
-      Mahuta.import(self, file)
-    end
+  module Common
+    require 'mahuta/common/import'
     
   end
   
