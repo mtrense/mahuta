@@ -2,6 +2,7 @@
 require 'active_support'
 require 'active_support/core_ext'
 require 'mahuta'
+require 'pry'
 
 module Namespace
   
@@ -32,7 +33,7 @@ module Property
 end
 
 schema = Mahuta::Schema.new(
-  root: Namespace, 
+  root: [Namespace, Mahuta::Common::Import],
   namespace: Namespace,
   type: Type,
   property: Property
@@ -41,15 +42,7 @@ schema = Mahuta::Schema.new(
 #########################################################
 
 tree = Mahuta.build schema do
-  namespace! :com, :example do
-    namespace! :test do
-      type! :Person do
-        property! :given_name, :string
-        property! :family_name, :string
-        property! :date_of_birth, :date
-      end
-    end
-  end
+  import('parent')
 end
 
 #########################################################
