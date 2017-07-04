@@ -15,7 +15,7 @@
 
 require 'mahuta'
 
-Tn = Mahuta
+Mht = Mahuta
 
 module Mahuta
   N = Node
