@@ -22,7 +22,7 @@ module Mahuta
       @schema = schema
       @attributes = attributes
       @node_type = type
-      self.schema[@node_type].each do |type|
+      [*self.schema[@node_type]].each do |type|
         case type
         when Module
           extend type
@@ -75,7 +75,7 @@ module Mahuta
     end
     
     def schema
-      @schema || parent.schema
+      @schema || (parent ? parent.schema : {})
     end
     
     def [](name)
