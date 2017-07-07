@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
   
-  spec.add_dependency 'pastel', '~> 0.7'
+  spec.add_dependency 'pastel', '~> 0.6'
   
   spec.add_development_dependency 'simplecov', '~> 0.14'
   spec.add_development_dependency 'simplecov-console', '~> 0.4'
