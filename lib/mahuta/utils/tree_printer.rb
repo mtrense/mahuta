@@ -13,24 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require 'pastel'
+
 module Mahuta::Utils
   
   class TreePrinter
     include Mahuta::Visitor
     
-    DEFAULT_FORMAT = proc do |node, depth, desc|
-      '  '*depth + (node.leaf? ? '-' : '+') + " [#{node.node_type}] #{desc}"
+    P = Pastel.new
+    
+    SIMPLE_FORMAT = proc do |node, depth|
+      attrs = node.attributes.collect {|n, v| "#{n}=#{v.inspect}" }
+      '  '*depth + (node.leaf? ? '-' : '+') + " [#{node.node_type}] #{attrs.join(' ')}"
+    end
+    
+    EXTENDED_COLORIZED_FORMAT = proc do |node, depth|
+      attrs = node.attributes.collect {|n, v| "#{P.underline(n)}=#{P.bright_blue(v.inspect)}" }
+      '  '*depth + P.bold(node.leaf? ? '-' : '+') + " [#{P.bold.yellow(node.node_type.to_s)}] " + attrs.join(' ')
     end
     
     def initialize(options = {})
       @out = options[:out] || $stdout
-      @inspect = options[:inspect] || [:name]
-      @format = options[:format] || DEFAULT_FORMAT
+      @format = options[:format] || EXTENDED_COLORIZED_FORMAT
     end
     
     def enter(node, depth)
-      desc = [*@inspect].lazy.collect {|i| node.respond_to?(i) || node[i]}.detect {|obj| obj } || (node.root? ? 'ROOT' : node.inspect)
-      @out.puts @format.call(node, depth, desc)
+      @out.puts @format.call(node, depth)
     end
     
   end
