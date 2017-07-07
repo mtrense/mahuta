@@ -29,7 +29,7 @@ module Mahuta
     
     def leave(node, depth)
       if respond_to?("leave_#{node.node_type}")
-        send "leave_#{node.node_type}", *[node, depth][0...method("enter_#{node.node_type}").arity]
+        send "leave_#{node.node_type}", *[node, depth][0...method("leave_#{node.node_type}").arity] # TODO Write a test for that!!!
       end
     end
     
