@@ -104,6 +104,10 @@ module Mahuta
         super(name, *args, &block)
       end
     end
+
+    def respond_to?(what) 
+      super || attributes.include?(what)
+    end
     
     def add_child(node_type, attributes = {}, &block)
       Node.new(self, nil, node_type, attributes, &block).tap do |node|
