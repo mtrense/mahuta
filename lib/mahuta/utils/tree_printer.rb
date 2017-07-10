@@ -28,17 +28,18 @@ module Mahuta::Utils
     end
     
     EXTENDED_COLORIZED_FORMAT = proc do |node, depth|
-      attrs = node.attributes.collect {|n, v| "#{P.underline(n)}=#{P.bright_blue(v.inspect)}" }
-      '  '*depth + P.bold(node.leaf? ? '-' : '+') + " [#{P.bold.yellow(node.node_type.to_s)}] " + attrs.join(' ')
+      attrs = node.attributes.collect {|n, v| "#{P.yellow(n)} = #{P.cyan(v.inspect)}" }
+      '  '*depth + P.bold(node.leaf? ? '-' : '+') + " [#{P.bold.blue(node.node_type.to_s)}] " + attrs.join(' ')
     end
     
-    def initialize(options = {})
+    def initialize(options = {}, &filter_block)
       @out = options[:out] || $stdout
       @format = options[:format] || EXTENDED_COLORIZED_FORMAT
+      @filter = filter_block || Proc.new { true }
     end
     
     def enter(node, depth)
-      @out.puts @format.call(node, depth)
+      @out.puts @format.call(node, depth) if @filter.call(node)
     end
     
   end
