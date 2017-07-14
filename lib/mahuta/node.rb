@@ -134,6 +134,14 @@ module Mahuta
         end
       end
     end
+
+    def is_last_child? 
+      parent.children.last == self
+    end
+
+    def is_first_child? 
+      parent.children.first == self
+    end
     
   end
   
