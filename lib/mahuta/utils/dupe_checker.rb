@@ -20,7 +20,7 @@ module Mahuta::Utils
     def find_dupes(node) 
       return [] if node.node_type == :root
       node.parent.children.select do |sibling|
-        sibling != node && sibling[:name] == node[:name] && sibling.node_type == node.node_type
+        sibling != node && sibling[:name] == node[:name] && sibling.node_type == node.node_type && node.attributes == sibling.attributes
       end
     end
 
