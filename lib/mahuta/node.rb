@@ -121,6 +121,10 @@ module Mahuta
       yield self, :leave, depth if block
     end
     
+    def inspect
+      "#<Mahuta::Node:0x#{object_id.to_s(16)} type:#{node_type}>"
+    end
+    
     private def __filter_node_list(nodes, *of_type, &block)
       if not block and of_type.empty?
         nodes
