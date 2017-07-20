@@ -17,6 +17,7 @@ module Mahuta
   
   module Utils
     require 'mahuta/utils/tree_printer'
+    require 'mahuta/utils/dupe_checker'
     
     
   end

@@ -159,6 +159,22 @@ RSpec.describe Mahuta::Node do
       expect(root.descendant(:one)).to equal(one)
       expect(root.descendant(:two)).to equal(one_two)
     end
+
+    it('#is_first_child? is true for first child') do
+      expect(one_two.is_first_child?).to equal(true)
+    end
+
+    it('#is_first_child? is false for other children') do
+      expect(one_one.is_first_child?).to equal(false)
+    end
+
+    it('#is_last_child? is true for last child') do
+      expect(one_one.is_last_child?).to equal(true)
+    end
+
+    it('#is_last_child? is false for other children') do
+      expect(one_two.is_last_child?).to equal(false)
+    end
     
     context 'Traversing' do
       let(:traversal_order) do
