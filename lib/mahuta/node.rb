@@ -125,6 +125,11 @@ module Mahuta
       yield self, :leave, depth if block
     end
     
+    def |(visitor)
+      traverse(visitor)
+      visitor
+    end
+    
     def inspect
       "#<Mahuta::Node:0x#{object_id.to_s(16)} type:#{node_type}>"
     end
