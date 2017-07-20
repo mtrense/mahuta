@@ -32,6 +32,15 @@ module Mahuta
         send "leave_#{node.node_type}", *[node, depth][0...method("leave_#{node.node_type}").arity] # TODO Write a test for that!!!
       end
     end
+
+    def traverse(tree) 
+      tree.traverse(self)
+      self
+    end
+
+    def pipe(visitor)
+      visitor.traverse(self.result)
+    end
     
   end
   
