@@ -30,8 +30,17 @@ module Mahuta
     dir = Pathname(loc.path).parent
     file = file + '.rb' unless file.end_with?('.rb')
     path = (dir + file).to_s
-    node.instance_eval(File.read(path), path)
+    with_location(path) { node.instance_eval(File.read(path), path) }
     node
+  end
+  
+  def self.with_location(path, &block)
+    begin
+      (Thread.current[:mahuta_locations] ||= []) << path.to_s
+      yield if block_given?
+    ensure
+      Thread.current[:mahuta_locations].pop
+    end
   end
   
 end

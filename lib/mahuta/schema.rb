@@ -22,8 +22,12 @@ module Mahuta
       instance_exec &block if block
     end
     
-    def new(&block)
-      Mahuta.build self, &block
+    def new(file = nil, &block)
+      if block
+        Mahuta.with_location(file) { Mahuta.build self, &block }
+      elsif file
+        Mahuta.with_location(file) { Mahuta.build(self) { eval File.read(file), binding, file.to_s } }
+      end
     end
     
     def [](key)

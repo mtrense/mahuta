@@ -110,7 +110,10 @@ module Mahuta
     end
     
     def add_child(node_type, attributes = {}, &block)
-      Node.new(self, nil, node_type, attributes, &block).tap do |node|
+      location_hash = if location = __defining_location
+        { path: location.path, lineno: location.lineno }
+      end
+      Node.new(self, nil, node_type, { __location: location_hash }.merge(attributes), &block).tap do |node|
         children << node
       end
     end
@@ -147,6 +150,12 @@ module Mahuta
     
     def inspect
       "#<Mahuta::Node:0x#{object_id.to_s(16)} type:#{node_type}>"
+    end
+    
+    private def __defining_location
+      if loc = Thread.current[:mahuta_locations]&.last
+        caller_locations.select {|l| l.absolute_path == loc }.first
+      end
     end
     
     private def __filter_node_list(nodes, *of_type, &block)
