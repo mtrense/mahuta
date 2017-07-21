@@ -118,6 +118,7 @@ module Mahuta
     def deep_freeze!
       freeze!
       children.each(&:freeze!)
+      self
     end
     
     def freeze!
@@ -126,6 +127,7 @@ module Mahuta
       @attributes.each {|k, v| k.freeze; v.freeze }
       @children.freeze
       freeze
+      self
     end
     
     def traverse(visitor = nil, depth = 0, &block)
