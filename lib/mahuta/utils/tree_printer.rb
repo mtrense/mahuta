@@ -51,7 +51,7 @@ module Mahuta::Utils
       when Hash
         P.decorate(node.node_type.to_s, *@type_colors[node.node_type])
       when Proc
-        P.decorate(node.node_type.to_s, instance_exec(node.node_type, node, &@type_colors))
+        P.decorate(node.node_type.to_s, *instance_exec(node.node_type, node, &@type_colors))
       end
     end
     
