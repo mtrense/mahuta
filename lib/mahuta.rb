@@ -28,7 +28,7 @@ module Mahuta
   def self.import(node, file)
     loc = caller_locations.reject {|l| %r'lib/mahuta' === l.path }.first
     dir = Pathname(loc.path).parent
-    file = file + '.rb' unless file.include?('.')
+    file = file + '.rb' unless file.end_with?('.rb')
     path = (dir + file).to_s
     node.instance_eval(File.read(path), path)
     node
