@@ -115,6 +115,19 @@ module Mahuta
       end
     end
     
+    def deep_freeze!
+      freeze!
+      children.each(&:freeze!)
+    end
+    
+    def freeze!
+      @node_type.freeze
+      @attributes.freeze
+      @attributes.each {|k, v| k.freeze; v.freeze }
+      @children.freeze
+      freeze
+    end
+    
     def traverse(visitor = nil, depth = 0, &block)
       visitor.enter(self, depth) if visitor and visitor.respond_to?(:enter)
       yield self, :enter, depth if block
