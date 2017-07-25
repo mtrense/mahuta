@@ -153,7 +153,7 @@ module Mahuta
     end
     
     def inspect
-      "#<Mahuta::Node:0x#{object_id.to_s(16)} type:#{node_type} name:#{name}>"
+      "#<Mahuta::Node:0x#{object_id.to_s(16)} type:#{node_type}#{self[:name] ? " name:#{self[:name]}" : ''}>"
     end
     
     private def __defining_location
