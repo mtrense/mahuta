@@ -13,12 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Mahuta
+module Mahuta::Common
   
-  module Common
-    require 'mahuta/common/tree_producer'
-    require 'mahuta/common/tree_duplicator'
-    require 'mahuta/common/import'
+  module TreeDuplicator
+    
+    def self.included(type)
+      unless [ TreeProducer, Mahuta::Visitor ].all? {|mod| type.ancestors.include?(mod) }
+        warn 'TreeDuplicator needs features from Mahuta::Visitor and TreeProducer, be sure to include it before'
+      end
+    end
+    
+    def enter(node, depth)
+      child! node.node_type, node.attributes
+      if node.has_schema?
+        top.instance_variable_set(:@schema, node.instance_variable_get(:@schema))
+      end
+    end
+    
+    def leave(node, depth)
+      descend
+    end
     
   end
   
