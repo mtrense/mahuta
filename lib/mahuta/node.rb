@@ -74,6 +74,10 @@ module Mahuta
       end
     end
     
+    def has_schema?
+      !! @schema
+    end
+    
     def schema
       @schema || (parent ? parent.schema : {})
     end
