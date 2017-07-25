@@ -16,6 +16,7 @@
 module Mahuta
   
   module Common
+    require 'mahuta/common/tree_producer'
     require 'mahuta/common/import'
     
   end
