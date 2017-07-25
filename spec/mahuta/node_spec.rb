@@ -15,32 +15,9 @@
 
 RSpec.describe Mahuta::Node do
   
-  let :schema do
-    Mahuta::Schema.new do
-      type :root do
-        def one!(attributes = {}, &block)
-          add_child(:one, attributes, &block)
-        end
-      end
-      type :one do
-        def one!(attributes = {}, &block)
-          add_child(:one, attributes, &block)
-        end
-        def two!(attributes = {}, &block)
-          add_child(:two, attributes, &block)
-        end
-      end
-      type :two do
-        def three!(attributes = {}, &block)
-          add_child(:three, attributes, &block)
-        end
-      end
-    end
-  end
-  
   context 'A single node with attributes' do
     let(:root) do
-      Mahuta::Node.new nil, schema, :root, test1: true, test2: 123, test3: [:a, :b, :c]
+      Mahuta::Node.new nil, SPEC_SAMPLE_SCHEMA, :root, test1: true, test2: 123, test3: [:a, :b, :c]
     end
     subject { root }
     
@@ -65,7 +42,7 @@ RSpec.describe Mahuta::Node do
   
   context 'A root node with one child node' do
     let(:root) do
-      schema.new do
+      SPEC_SAMPLE_SCHEMA.new do
         one!
       end
     end
@@ -75,7 +52,10 @@ RSpec.describe Mahuta::Node do
     it { expect(subject.children).not_to be_empty }
     it { expect(subject).to be_root }
     it { expect(subject).not_to be_leaf }
-
+    
+    it { expect(subject).to have_schema }
+    it { expect(one).not_to have_schema }
+    
     it('should have exactly one descendant') do
       expect(subject.descendants.length).to equal(1) 
       expect(subject.descendants.first).to equal(subject.descendant)
@@ -85,11 +65,23 @@ RSpec.describe Mahuta::Node do
     
     it { expect(subject[0]).to equal(subject.children.first) }
     
+    context 'Freezing' do
+      before(:each) { root.freeze! }
+      
+      it { expect(root).to be_frozen }
+      it { expect(root.attributes).to be_frozen }
+      it { expect(root.children).to be_frozen }
+      it { expect(one).not_to be_frozen }
+      it { expect(one.attributes).not_to be_frozen }
+      it { expect(one.children).not_to be_frozen }
+      
+    end
+    
   end
   
   context 'A node with one parent' do
     let(:root) do
-      schema.new do
+      SPEC_SAMPLE_SCHEMA.new do
         one!
       end
     end
@@ -109,7 +101,7 @@ RSpec.describe Mahuta::Node do
   
   context 'A hierarchy of three nodes' do
     let(:root) do
-      schema.new do
+      SPEC_SAMPLE_SCHEMA.new do
         one! do
           two! do
             three!
@@ -176,6 +168,18 @@ RSpec.describe Mahuta::Node do
       expect(one_two.is_last_child?).to equal(false)
     end
     
+    context 'Deep freezing' do
+      before(:each) { one_two.deep_freeze! }
+      
+      it { expect(root).not_to be_frozen }
+      it { expect(one).not_to be_frozen }
+      it { expect(one_two).to be_frozen }
+      it { expect(one_two_three).to be_frozen }
+      it { expect(one_one).not_to be_frozen }
+      it { expect(one_one_two).not_to be_frozen }
+      
+    end
+    
     context 'Traversing' do
       let(:traversal_order) do
         [
@@ -221,7 +225,7 @@ RSpec.describe Mahuta::Node do
   
   context 'A hierarchy of three nodes' do
     let(:root) do
-      schema.new do
+      SPEC_SAMPLE_SCHEMA.new do
         Mahuta.import self, 'example_parent.rb'
       end
     end
