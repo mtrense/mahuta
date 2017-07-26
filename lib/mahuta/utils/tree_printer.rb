@@ -14,7 +14,6 @@
 # limitations under the License.
 
 require 'pastel'
-require 'byebug'
 
 module Mahuta::Utils
   
