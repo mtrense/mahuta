@@ -19,7 +19,7 @@ module Mahuta::Common
     
     def self.included(type)
       unless [ TreeProducer, Mahuta::Visitor ].all? {|mod| type.ancestors.include?(mod) }
-        warn 'TreeDuplicator needs features from Mahuta::Visitor and TreeProducer, be sure to include it before'
+        warn 'TreeDuplicator needs features from Mahuta::Visitor and TreeProducer, be sure to include it'
       end
     end
     
