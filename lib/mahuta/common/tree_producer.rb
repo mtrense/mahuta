@@ -35,11 +35,15 @@ module Mahuta::Common
       @stack.last
     end
     
+    ##
+    # Adds a new child and leaves the current stack pointer on the current node
     def child(node_type, attributes = {})
       raise 'Cannot add a new child without descending, when no parent is available' unless top
       top.add_child(node_type, attributes)
     end
     
+    ##
+    # Adds a new child and sets the current stack pointer onto the newly created child
     def child!(node_type, attributes = {})
       new_child = unless @stack.empty?
         child(node_type, attributes)
