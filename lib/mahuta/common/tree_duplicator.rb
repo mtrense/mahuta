@@ -24,14 +24,47 @@ module Mahuta::Common
     end
     
     def enter(node, depth)
-      child! node.node_type, node.attributes
-      if node.has_schema?
-        top.instance_variable_set(:@schema, node.instance_variable_get(:@schema))
+      if transform?(node)
+        transform(node)
+        apply(node, top)
+      end
+    end
+    
+    def transform?(source)
+      true
+    end
+    
+    def transform(source)
+      if respond_to?("transform_#{source.node_type}")
+        send "transform_#{source.node_type}", source
+      else
+        copy_node(source)
+      end
+    end
+    
+    def copy_node(source)
+      child! source.node_type, source.attributes.merge({ __location: source })
+      if source.has_schema?
+        top.instance_variable_set(:@schema, source.instance_variable_get(:@schema))
+      end
+    end
+    
+    def apply(source, target)
+      if respond_to?("apply_#{source.node_type}")
+        case method("apply_#{source.node_type}").arity
+        when 0
+          send "apply_#{source.node_type}"
+        when 1
+          send "apply_#{source.node_type}", source
+        when 2
+          send "apply_#{source.node_type}", source, target
+        end
       end
     end
     
     def leave(node, depth)
-      descend
+      super
+      ascend
     end
     
   end
