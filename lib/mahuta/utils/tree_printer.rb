@@ -22,27 +22,29 @@ module Mahuta::Utils
     
     P = Pastel.new
     
-    SIMPLE_FORMAT = proc do |node, depth|
-      attrs = node.attributes.collect {|n, v| "#{n}=#{v.inspect}" }
-      '  '*depth + (node.leaf? ? '-' : '+') + " [#{node.node_type}] #{attrs.join(' ')}"
+    SIMPLE_FORMAT = proc do |node, attrs, depth|
+      attributes_string = attrs.collect {|n, v| "#{n}=#{v.inspect}" }.join(' ')
+      '  '*depth + (node.leaf? ? '-' : '+') + " [#{node.node_type}] #{attributes_string}"
     end
     
-    EXTENDED_COLORIZED_FORMAT = proc do |node, depth|
-      attrs = node.attributes.collect {|n, v| "#{P.white(n)}=#{P.cyan(v.inspect)}" }
-      '  '*depth + P.bold(node.leaf? ? '-' : '+') + " [#{__type_color(node)}] " + attrs.join(' ')
+    EXTENDED_COLORIZED_FORMAT = proc do |node, attrs, depth|
+      attributes_string = attrs.collect {|n, v| "#{P.white(n)}=#{P.cyan(v.inspect)}" }.join(' ')
+      '  '*depth + P.bold(node.leaf? ? '-' : '+') + " [#{__type_color(node)}] #{attributes_string}"
     end
     
     def initialize(options = {}, &filter_block)
       @out = options[:out] || $stdout
       @format = options[:format] || EXTENDED_COLORIZED_FORMAT
       @filter = filter_block || Proc.new { true }
+      @internals = options[:internals]
       @type_colors = options.delete(:type_colors) || proc { [:bold, :blue] }
       @key_colors = options.delete(:key_colors) || proc { [:yellow] }
       @value_colors = options.delete(:value_colors) || proc { [:cyan] }
     end
     
     def enter(node, depth)
-      @out.puts instance_exec(node, depth, &@format) if @filter.call(node)
+      attrs = node.attributes.select {|k, v| @internals or not k.to_s.start_with?('__') }
+      @out.puts instance_exec(node, attrs, depth, &@format) if @filter.call(node)
     end
     
     private def __type_color(node)
