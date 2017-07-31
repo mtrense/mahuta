@@ -24,11 +24,6 @@ RSpec.describe Mahuta::Common::TreeProducer do
           
           def enter(node, depth)
             child! :depth_counter, depth: depth
-            puts @stack.inspect
-          end
-          
-          def leave(node, depth)
-            ascend
           end
           
         end
@@ -50,7 +45,7 @@ RSpec.describe Mahuta::Common::TreeProducer do
     end
     
     let(:result) do
-      root.traverse(producer)
+      producer.traverse(root)
       producer.result
     end
     let(:one1) { result[0] }

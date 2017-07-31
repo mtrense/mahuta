@@ -25,33 +25,65 @@ module Mahuta::Common
     
     def initialize(options = {})
       @result = options.delete(:result)
-      @stack = [ *@result ]
+      @current = @result
       super
     end
     
-    attr_reader :result
+    attr_reader :result, :current
     
-    def top
-      @stack.last
+    private def __traverse_subtree(node, depth)
+      last = current
+      begin
+        enter(node, depth)
+        node.children.each do |child|
+          __traverse_subtree(child, depth + 1)
+        end
+        leave(node, depth)
+      ensure
+        @current = last
+      end
+    end
+
+    def enter(node, depth)
+      if transform?(node)
+        transform(node)
+      end
+    end
+    
+    def transform?(source)
+      true
+    end
+    
+    def transform(source)
+      if respond_to?("transform_#{source.node_type}")
+        send "transform_#{source.node_type}", source
+      end
+    end
+    
+    def copy_node!(source)
+      child! source.node_type, source.attributes.merge({ __location: source })
+      if source.has_schema?
+        current.instance_variable_set(:@schema, source.instance_variable_get(:@schema))
+      end
     end
     
     ##
     # Adds a new child and leaves the current stack pointer on the current node
     def child(node_type, attributes = {})
-      raise 'Cannot add a new child without descending, when no parent is available' unless top
-      top.add_child(node_type, attributes)
+      raise 'Cannot add a new child without descending, when no parent is available' unless current
+      current.add_child(node_type, attributes)
     end
     
     ##
     # Adds a new child and sets the current stack pointer onto the newly created child
     def child!(node_type, attributes = {})
-      new_child = unless @stack.empty?
+      new_child = if current
         child(node_type, attributes)
       else
-        Mahuta::Node.new(nil, nil, :node_type, attributes)
+        Mahuta::Node.new(nil, nil, node_type, attributes)
       end
       @result ||= new_child
-      @stack.push new_child
+      @current = new_child
       new_child
     end
     
@@ -60,7 +92,7 @@ module Mahuta::Common
     end
     
     def ascend(steps = 1)
-      @stack.pop(steps)
+      steps.times { @current = @current.parent }
     end
     
   end

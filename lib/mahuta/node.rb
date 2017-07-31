@@ -137,18 +137,8 @@ module Mahuta
       self
     end
     
-    def traverse(visitor = nil, depth = 0, &block)
-      visitor.enter(self, depth) if visitor and visitor.respond_to?(:enter)
-      yield self, :enter, depth if block
-      children.each do |child|
-        child.traverse(visitor, depth + 1, &block)
-      end
-      visitor.leave(self, depth) if visitor and visitor.respond_to?(:leave)
-      yield self, :leave, depth if block
-    end
-    
     def |(visitor)
-      traverse(visitor)
+      visitor.traverse(self)
       visitor
     end
     

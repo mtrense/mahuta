@@ -21,6 +21,19 @@ module Mahuta
       @options = options
     end
     
+    def traverse(tree, depth = 0)
+      __traverse_subtree(tree, depth)
+      self
+    end
+    
+    private def __traverse_subtree(node, depth)
+      enter(node, depth)
+      node.children.each do |child|
+        __traverse_subtree(child, depth + 1)
+      end
+      leave(node, depth)
+    end
+    
     def enter(node, depth)
       if respond_to?("enter_#{node.node_type}")
         send "enter_#{node.node_type}", *[node, depth][0...method("enter_#{node.node_type}").arity]
