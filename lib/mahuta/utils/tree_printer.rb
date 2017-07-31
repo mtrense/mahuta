@@ -34,7 +34,14 @@ module Mahuta::Utils
     
     def initialize(options = {}, &filter_block)
       @out = options[:out] || $stdout
-      @format = options[:format] || EXTENDED_COLORIZED_FORMAT
+      @format = case options[:format]
+      when Proc
+        options[:format]
+      when :simple, 'simple'
+        SIMPLE_FORMAT
+      when :extended, 'extended', nil
+        EXTENDED_COLORIZED_FORMAT
+      end
       @filter = filter_block || Proc.new { true }
       @internals = options[:internals]
       @type_colors = options.delete(:type_colors) || proc { [:bold, :blue] }
