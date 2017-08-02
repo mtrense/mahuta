@@ -137,6 +137,13 @@ module Mahuta
       self
     end
     
+    def ===(obj)
+      Node === obj and 
+        node_type == obj.node_type and 
+        attributes == obj.attributes and 
+        schema == obj.schema
+    end
+    
     def |(visitor)
       visitor.traverse(self)
       visitor
