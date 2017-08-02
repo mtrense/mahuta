@@ -74,6 +74,10 @@ module Mahuta::Common
       current.add_child(node_type, attributes)
     end
     
+    def child_if_not_exist(node_type, attributes = {})
+      (@current ? current.children(node_type) {|c| __compare_node(c, attributes) }&.first : nil) || child(node_type, attributes)
+    end
+    
     ##
     # Adds a new child and sets the current stack pointer onto the newly created child
     def child!(node_type, attributes = {})
@@ -87,12 +91,21 @@ module Mahuta::Common
       new_child
     end
     
+    def child_or_descend!(node_type, attributes = {})
+      c = (current ? current.children(node_type) {|c| __compare_node(c, attributes) }&.first : nil) || child!(node_type, attributes)
+      @current = c
+    end
+    
     def |(visitor)
       result.deep_freeze! | visitor
     end
     
     def ascend(steps = 1)
       steps.times { @current = @current.parent }
+    end
+    
+    private def __compare_node(node, attributes = {})
+      node.attributes.reject {|k,v| k.to_s.start_with?('__') } == attributes
     end
     
   end
