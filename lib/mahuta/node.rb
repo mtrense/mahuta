@@ -85,11 +85,18 @@ module Mahuta
     def [](name)
       case name
       when Symbol
-        attributes[name]
+        self.attributes[name]
       when String
         
       when Integer, Range
-        children[name]
+        self.children[name]
+      end
+    end
+    
+    def []=(name, value)
+      case name
+      when Symbol
+        self.attributes[name] = value
       end
     end
     
