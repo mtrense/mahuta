@@ -30,11 +30,12 @@ RSpec.describe Mahuta::Node do
     it('should have no ascendants') { expect(subject.ascendant).to be_nil }
     it('should have no descendants') { expect(subject.descendants).to be_empty }
     it('should have no descendants') { expect(subject.descendant).to be_nil }
+    it { expect(subject.position).to be(0) }
     
-    it { expect(subject[:test1]).to equal(true) }
+    it { expect(subject[:test1]).to be_truthy }
     it { expect(subject[:test2]).to equal(123) }
     it { expect(subject[:test3]).to contain_exactly(:a, :b, :c) }
-    it { expect(subject.test1).to equal(true) }
+    it { expect(subject.test1).to be_truthy }
     it { expect(subject.test2).to equal(123) }
     it { expect(subject.test3).to contain_exactly(:a, :b, :c) }
     
@@ -52,6 +53,8 @@ RSpec.describe Mahuta::Node do
     it { expect(subject.children).not_to be_empty }
     it { expect(subject).to be_root }
     it { expect(subject).not_to be_leaf }
+    
+    it { expect(subject.position).to be(0) }
     
     it { expect(subject).to have_schema }
     it { expect(one).not_to have_schema }
@@ -91,6 +94,8 @@ RSpec.describe Mahuta::Node do
     it { expect(subject.children).to be_empty }
     it { expect(subject).not_to be_root }
     it { expect(subject).to be_leaf }
+    
+    it { expect(subject.position).to be(0) }
     
     it('should have one ascendant') { expect(subject.ascendants).to contain_exactly(root) }
     it('should have one ascendant') { expect(subject.ascendant).to equal(root) }
@@ -152,20 +157,20 @@ RSpec.describe Mahuta::Node do
       expect(root.descendant(:two)).to equal(one_two)
     end
 
-    it('#is_first_child? is true for first child') do
-      expect(one_two.is_first_child?).to equal(true)
+    it('#first? is true for first child') do
+      expect(one_two.first?).to be_truthy
     end
 
-    it('#is_first_child? is false for other children') do
-      expect(one_one.is_first_child?).to equal(false)
+    it('#first? is false for other children') do
+      expect(one_one.first?).to be_falsy
     end
 
-    it('#is_last_child? is true for last child') do
-      expect(one_one.is_last_child?).to equal(true)
+    it('#last? is true for last child') do
+      expect(one_one.last?).to be_truthy
     end
 
-    it('#is_last_child? is false for other children') do
-      expect(one_two.is_last_child?).to equal(false)
+    it('#last? is false for other children') do
+      expect(one_two.last?).to be_falsy
     end
     
     context 'Deep freezing' do

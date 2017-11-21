@@ -108,6 +108,20 @@ module Mahuta
       children.empty?
     end
     
+    ##
+    # Returns the position of this node within the list of it's children.
+    def position
+      root? ? 0 : parent.children.index(self)
+    end
+    
+    def last? 
+      parent.children.last == self
+    end
+    
+    def first? 
+      parent.children.first == self
+    end
+    
     def method_missing(name, *args, &block)
       if attributes.include?(name) and args.empty? and block.nil?
         attributes[name]
@@ -176,14 +190,6 @@ module Mahuta
       end
     end
 
-    def is_last_child? 
-      parent.children.last == self
-    end
-
-    def is_first_child? 
-      parent.children.first == self
-    end
-    
   end
   
 end
