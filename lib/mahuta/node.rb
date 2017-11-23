@@ -41,9 +41,9 @@ module Mahuta
       when Symbol
         node_type === other
       when Node
-        node_type == obj.node_type and 
-        attributes == obj.attributes and 
-        schema == obj.schema
+        node_type == other.node_type and 
+        attributes == other.attributes and 
+        schema == other.schema
       when Module
         other === self
       end
