@@ -45,13 +45,7 @@ module Mahuta::Common
     end
 
     def enter(node, depth)
-      if transform?(node)
-        transform(node)
-      end
-    end
-    
-    def transform?(source)
-      true
+      transform(node)
     end
     
     def transform(source)

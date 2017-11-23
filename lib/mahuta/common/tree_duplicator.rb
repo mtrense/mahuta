@@ -23,16 +23,20 @@ module Mahuta::Common
       end
     end
     
-    def leave(node, depth)
-      if transform?(node)
-        apply_after(node, current)
-      end
+    def duplicate?(node)
+      true
     end
     
     def enter(node, depth)
       super
-      if transform?(node)
+      if duplicate?(node)
         apply(node, current)
+      end
+    end
+    
+    def leave(node, depth)
+      if duplicate?(node)
+        apply_after(node, current)
       end
     end
     
@@ -40,7 +44,7 @@ module Mahuta::Common
       if respond_to?("transform_#{source.node_type}")
         send "transform_#{source.node_type}", source
       else
-        copy_node!(source)
+        copy_node!(source) if duplicate?(source)
       end
     end
     
