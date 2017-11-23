@@ -139,7 +139,12 @@ module Mahuta
       if attributes.include?(name) and args.empty? and block.nil?
         attributes[name]
       else
-        super(name, *args, &block)
+        begin
+          super(name, *args, &block)
+        rescue => e
+          puts e.backtrace
+          raise e
+        end
       end
     end
 
