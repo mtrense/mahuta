@@ -32,9 +32,8 @@ module Mahuta
       instance_exec &block if block
     end
     
-    attr_reader :parent, :node_type, :children, :attributes
+    attr_reader :parent, :node_type, :attributes
     alias :a :attributes
-    alias :c :children
     
     def ===(other)
       case other
@@ -52,6 +51,8 @@ module Mahuta
     def children(*of_type, &block)
       __filter_node_list(@children, *of_type, &block)
     end
+    
+    alias :c :children
     
     def root
       root? ? self : parent.root
