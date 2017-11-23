@@ -36,6 +36,19 @@ module Mahuta
     alias :a :attributes
     alias :c :children
     
+    def ===(other)
+      case other
+      when Symbol
+        node_type === other
+      when Node
+        node_type == obj.node_type and 
+        attributes == obj.attributes and 
+        schema == obj.schema
+      when Module
+        other === self
+      end
+    end
+    
     def children(*of_type, &block)
       __filter_node_list(@children, *of_type, &block)
     end
@@ -87,7 +100,7 @@ module Mahuta
       when Symbol
         self.attributes[name]
       when String
-        
+        # TODO Implement sth like XPath
       when Integer, Range
         self.children[name]
       end
@@ -156,13 +169,6 @@ module Mahuta
       @children.freeze
       freeze
       self
-    end
-    
-    def ===(obj)
-      Node === obj and 
-        node_type == obj.node_type and 
-        attributes == obj.attributes and 
-        schema == obj.schema
     end
     
     def |(visitor)
