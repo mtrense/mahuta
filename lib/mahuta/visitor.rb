@@ -17,6 +17,10 @@ module Mahuta
   
   module Visitor
     
+    def self.included(type)
+      type.extend ClassMethods
+    end
+    
     def initialize(options = {})
       @options = options
     end
@@ -26,24 +30,45 @@ module Mahuta
       self
     end
     
+    ##
+    # Calls enter(node, depth) for the given node. If the enter method does not 
+    # return :stop, this method recursively traverses the subtree under the 
+    # current node. Calls leave(node, depth) after processing enter() and 
+    # possibly the subtree.
     private def __traverse_subtree(node, depth)
-      enter(node, depth)
-      node.children.each do |child|
-        __traverse_subtree(child, depth + 1)
+      unless enter(node, depth) == :stop
+        node.children.each do |child|
+          __traverse_subtree(child, depth + 1)
+        end
       end
       leave(node, depth)
     end
     
+    ##
+    # Tries to call a method "enter_<node_type>" with arguments of 
+    # [node, [depth]] if that exists. This method might return :stop, in which 
+    # case the visitor will not traverse the subtree of this node.
     def enter(node, depth)
       if respond_to?("enter_#{node.node_type}")
         send "enter_#{node.node_type}", *[node, depth][0...method("enter_#{node.node_type}").arity]
       end
     end
     
+    ##
+    # Tries to call a method "leave_<node_type>" with arguments of 
+    # [node, [depth]] if that exists.
     def leave(node, depth)
       if respond_to?("leave_#{node.node_type}")
         send "leave_#{node.node_type}", *[node, depth][0...method("leave_#{node.node_type}").arity] # TODO Write a test for that!!!
       end
+    end
+    
+    module ClassMethods
+      
+      def traverse(tree, depth = 0)
+        new.traverse(tree, depth)
+      end
+      
     end
     
   end
