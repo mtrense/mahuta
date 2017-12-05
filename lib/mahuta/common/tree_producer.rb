@@ -25,35 +25,48 @@ module Mahuta::Common
     
     def initialize(options = {})
       @result = options.delete(:result)
-      @current = @result
+      pin! @result
       super
     end
     
     attr_reader :result, :current
     
+    def pin!(node)
+      @current = node
+    end
+    
+    ##
+    # Overrides the __traverse_subtree method from Visitor. Adds the notion of 
+    # a current node in the resulting tree, which then acts as cursor for all 
+    # further node insertions.
     private def __traverse_subtree(node, depth)
       last = current
       begin
-        enter(node, depth)
-        node.children.each do |child|
-          __traverse_subtree(child, depth + 1)
-        end
-        leave(node, depth)
+        super
       ensure
-        @current = last
+        pin! last
       end
     end
-
+    
+    ##
+    # Implementation of enter that calls transform for the traversed node.
     def enter(node, depth)
       transform(node)
     end
     
+    ##
+    # Called to do the actual transformation of the source node into the target 
+    # node. Delegates to transform_<node_type> if possible. The default 
+    # implementation does nothing.
     def transform(source)
       if respond_to?("transform_#{source.node_type}")
         send "transform_#{source.node_type}", source
       end
     end
     
+    ##
+    # Copies the given node into the resulting tree. Includes all attributes 
+    # and the schema if the given node has one.
     def copy_node!(source)
       child! source.node_type, source.attributes.merge({ __location: source })
       if source.has_schema?
@@ -62,14 +75,14 @@ module Mahuta::Common
     end
     
     ##
-    # Adds a new child and leaves the current stack pointer on the current node
-    def child(node_type, attributes = {})
+    # Adds a new child and leaves the current stack pointer on the current node.
+    def child(node_type, attributes = {}, &block)
       raise 'Cannot add a new child without descending, when no parent is available' unless current
       current.add_child(node_type, attributes)
     end
     
     def child_if_not_exist(node_type, attributes = {})
-      (@current ? current.children(node_type) {|c| __compare_node(c, attributes) }&.first : nil) || child(node_type, attributes)
+      (current ? current.children(node_type) {|c| __compare_node(c, attributes) }&.first : nil) || child(node_type, attributes)
     end
     
     ##
@@ -81,13 +94,13 @@ module Mahuta::Common
         Mahuta::Node.new(nil, nil, node_type, attributes)
       end
       @result ||= new_child
-      @current = new_child
+      pin! new_child
       new_child
     end
     
     def child_or_descend!(node_type, attributes = {})
       c = (current ? current.children(node_type) {|c| __compare_node(c, attributes) }&.first : nil) || child!(node_type, attributes)
-      @current = c
+      pin! c
     end
     
     def |(visitor)
@@ -95,11 +108,20 @@ module Mahuta::Common
     end
     
     def ascend(steps = 1)
-      steps.times { @current = @current.parent }
+      steps.times { pin! @current.parent }
     end
     
     private def __compare_node(node, attributes = {})
       node.attributes.reject {|k,v| k.to_s.start_with?('__') } == attributes
+    end
+    
+    class TreeBuilder
+      
+      def initialize(tree)
+        @tree = tree
+        @current_node = tree
+      end
+      
     end
     
   end
