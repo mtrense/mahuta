@@ -123,7 +123,7 @@ module Mahuta
     end
     
     ##
-    # Returns the position of this node within the list of it's children.
+    # Returns the position of this node within the list of it's siblings.
     def position
       root? ? 0 : parent.children.index(self)
     end
