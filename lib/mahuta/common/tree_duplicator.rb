@@ -33,35 +33,40 @@ module Mahuta::Common
     end
     
     def transform(source)
-      if respond_to?("transform_#{source.node_type}")
-        send "transform_#{source.node_type}", source
+      method_name = "transform_#{source.node_type}"
+      if respond_to?(method_name)
+        send method_name, source
       else
         copy_node!(source)
       end
     end
     
     def apply(source, target)
-      if respond_to?("apply_#{source.node_type}")
-        case method("apply_#{source.node_type}").arity
+      method_name = "apply_#{source.node_type}"
+      if respond_to?(method_name)
+        # Refactor that to one line
+        case method(method_name).arity
         when 0
-          send "apply_#{source.node_type}"
+          send method_name
         when 1
-          send "apply_#{source.node_type}", source
+          send method_name, source
         when 2
-          send "apply_#{source.node_type}", source, target
+          send method_name, source, target
         end
       end
     end
     
     def apply_after(source, target)
-      if respond_to?("apply_after_#{source.node_type}")
-        case method("apply_after_#{source.node_type}").arity
+      method_name = "apply_after_#{source.node_type}"
+      if respond_to?(method_name)
+        # Refactor that to one line
+        case method(method_name).arity
         when 0
-          send "apply_after_#{source.node_type}"
+          send method_name
         when 1
-          send "apply_after_#{source.node_type}", source
+          send method_name, source
         when 2
-          send "apply_after_#{source.node_type}", source, target
+          send method_name, source, target
         end
       end
     end

@@ -49,8 +49,9 @@ module Mahuta
     # [node, [depth]] if that exists. This method might return :stop, in which 
     # case the visitor will not traverse the subtree of this node.
     def enter(node, depth)
-      if respond_to?("enter_#{node.node_type}")
-        send "enter_#{node.node_type}", *[node, depth][0...method("enter_#{node.node_type}").arity]
+      method_name = "enter_#{node.node_type}"
+      if respond_to?(method_name)
+        send method_name, *[node, depth][0...method(method_name).arity]
       end
     end
     
@@ -58,8 +59,9 @@ module Mahuta
     # Tries to call a method "leave_<node_type>" with arguments of 
     # [node, [depth]] if that exists.
     def leave(node, depth)
-      if respond_to?("leave_#{node.node_type}")
-        send "leave_#{node.node_type}", *[node, depth][0...method("leave_#{node.node_type}").arity] # TODO Write a test for that!!!
+      method_name = "leave_#{node.node_type}"
+      if respond_to?(method_name)
+        send method_name, *[node, depth][0...method(method_name).arity] # TODO Write a test for that!!!
       end
     end
     

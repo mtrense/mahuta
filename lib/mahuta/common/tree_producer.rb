@@ -59,8 +59,9 @@ module Mahuta::Common
     # node. Delegates to transform_<node_type> if possible. The default 
     # implementation does nothing.
     def transform(source)
-      if respond_to?("transform_#{source.node_type}")
-        send "transform_#{source.node_type}", source
+      method_name = "transform_#{source.node_type}"
+      if respond_to?(method_name)
+        send method_name, source
       end
     end
     
